@@ -155,9 +155,10 @@ def most_popular_gender(data_list):
     Um string contendo o gênero que mais apareceu ('Male' ou 'Female') ou 'Equal', em caso de empate.
 
   """
-  if count_gender(data_list)[0]>count_gender(data_list)[1]:
+  [male, female] = count_gender(data_list)
+  if male > female:
     answer = "Male"
-  elif count_gender(data_list)[0]<count_gender(data_list)[1]:
+  elif male < female:
     answer = "Female"
   else:
     answer = "Equal"
@@ -200,17 +201,20 @@ def count_type(data_list):
   """
   subscriber = 0
   customer = 0
+  dependent = 0
 
   for data in data_list:
-    if data[-3]=='Subscriber':
+    if data[-3] == 'Subscriber':
       subscriber+=1
-    elif data[-3]=='Customer':
+    elif data[-3] == 'Customer':
       customer+=1 
+    elif data[-3] == 'Dependent':
+      dependent+=1
 
-  return [subscriber, customer]
+  return [subscriber, customer, dependent]
 
 type_list = column_to_list(data_list, -3)
-types = ["Subscriber", "Customer"]
+types = ["Subscriber", "Customer", 'Dependent']
 quantity = count_type(data_list)
 y_pos = list(range(len(types)))
 plt.bar(y_pos, quantity)
@@ -243,7 +247,8 @@ min_trip = 0.
 max_trip = 0.
 mean_trip = 0.
 median_trip = 0.
-
+total_trip = 0.
+num_trip = 0
 
 for index, item in enumerate(trip_duration_list):
   trip_duration_list[index] = float(item)
@@ -251,15 +256,19 @@ for index, item in enumerate(trip_duration_list):
 trip_duration_list.sort()
 
 for row in trip_duration_list:
+  total_trip += row
+  num_trip += 1
   if row < min_trip or min_trip == 0:
     min_trip = row
   if row > max_trip:
     max_trip = row
 
+mean_trip = total_trip / num_trip
 
-mean_trip = sum(trip_duration_list) / len(trip_duration_list)
-
-median_trip = trip_duration_list[len(trip_duration_list) //2]
+if num_trip % 2 == 0:
+  median_trip = (trip_duration_list[num_trip/2] + trip_duration_list[num_trip/2 + 1]) / 2
+else:
+  median_trip = trip_duration_list[num_trip //2]
 
 print("\nTAREFA 9: Imprimindo o mínimo, máximo, média, e mediana")
 print("Min: ", min_trip, "Max: ", max_trip, "Média: ", mean_trip, "Mediana: ", median_trip)
@@ -323,6 +332,10 @@ def count_items(column_list):
     count_items.append(column_list.count(item))
   return item_types, count_items
 
+#Como sugerido, verifiquei a quantidade de tipos de cliente, optei por fazer aqui para não precisar mover a função.
+column_list = column_to_list(data_list, -3)
+types, counts = count_items(column_list)
+print("Tipos:", types, "Counts:", counts)
 
 if answer == "yes":
   # ------------ NÃO MUDE NENHUM CÓDIGO AQUI ------------
